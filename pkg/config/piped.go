@@ -59,7 +59,7 @@ type PipedSpec struct {
 	Notifications Notifications `json:"notifications"`
 	// How the sealed secret should be managed.
 	SealedSecretManagement *SealedSecretManagement `json:"sealedSecretManagement"`
-	// Configuration for image watcher.
+	// Optional settings for image watcher.
 	ImageWatcher PipedImageWatcher `json:"imageWatcher"`
 }
 
@@ -381,8 +381,6 @@ type AnalysisProviderStackdriverConfig struct {
 type PipedImageProvider struct {
 	Name string                  `json:"name"`
 	Type model.ImageProviderType `json:"type"`
-	// Default is 5m.
-	PullInterval Duration `json:"pullInterval"`
 
 	DockerHubConfig *ImageProviderDockerHubConfig
 	GCRConfig       *ImageProviderGCRConfig
@@ -390,9 +388,8 @@ type PipedImageProvider struct {
 }
 
 type genericPipedImageProvider struct {
-	Name         string                  `json:"name"`
-	Type         model.ImageProviderType `json:"type"`
-	PullInterval Duration                `json:"pullInterval"`
+	Name string                  `json:"name"`
+	Type model.ImageProviderType `json:"type"`
 
 	Config json.RawMessage `json:"config"`
 }
@@ -405,10 +402,6 @@ func (p *PipedImageProvider) UnmarshalJSON(data []byte) error {
 	}
 	p.Name = gp.Name
 	p.Type = gp.Type
-	p.PullInterval = gp.PullInterval
-	if p.PullInterval == 0 {
-		p.PullInterval = Duration(5 * time.Minute)
-	}
 
 	switch p.Type {
 	case model.ImageProviderTypeDockerHub:
@@ -607,6 +600,10 @@ func (i *PipedImageWatcher) Validate() error {
 
 type PipedImageWatcherRepoTarget struct {
 	RepoID string `json:"repoId"`
+	// Interval to pull from git repository and pull images defined
+	// in image watcher file in the repo from image provider.
+	// Default is 5m.
+	PullInterval Duration `json:"pullInterval"`
 	// The paths to ImageWatcher files to be included.
 	Includes []string `json:"includes"`
 	// The paths to ImageWatcher files to be excluded.

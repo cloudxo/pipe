@@ -150,27 +150,24 @@ func TestPipedConfig(t *testing.T) {
 				},
 				ImageProviders: []PipedImageProvider{
 					{
-						Name:         "my-dockerhub",
-						Type:         "DOCKER_HUB",
-						PullInterval: Duration(time.Minute * 5),
+						Name: "my-dockerhub",
+						Type: "DOCKER_HUB",
 						DockerHubConfig: &ImageProviderDockerHubConfig{
 							Username:     "foo",
 							PasswordFile: "/etc/piped-secret/dockerhub-pass",
 						},
 					},
 					{
-						Name:         "my-gcr",
-						Type:         "GCR",
-						PullInterval: Duration(time.Minute * 5),
+						Name: "my-gcr",
+						Type: "GCR",
 						GCRConfig: &ImageProviderGCRConfig{
 							Address:         "asia.gcr.io",
 							CredentialsFile: "/etc/piped-secret/gcr-service-account",
 						},
 					},
 					{
-						Name:         "my-ecr",
-						Type:         "ECR",
-						PullInterval: Duration(time.Minute * 5),
+						Name: "my-ecr",
+						Type: "ECR",
 						ECRConfig: &ImageProviderECRConfig{
 							Region:          "us-west-2",
 							RegistryID:      "default",
@@ -228,8 +225,9 @@ func TestPipedConfig(t *testing.T) {
 				ImageWatcher: PipedImageWatcher{
 					Repos: []PipedImageWatcherRepoTarget{
 						{
-							RepoID:   "foo",
-							Includes: []string{"imagewatcher-dev.yaml", "imagewatcher-stg.yaml"},
+							RepoID:       "foo",
+							PullInterval: Duration(10 * time.Minute),
+							Includes:     []string{"imagewatcher-dev.yaml", "imagewatcher-stg.yaml"},
 						},
 					},
 				},
